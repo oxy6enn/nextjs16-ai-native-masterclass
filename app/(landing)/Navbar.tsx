@@ -74,7 +74,7 @@ function Navbar() {
                 {/* Logo */}
                 <Link href="/#home" className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-purple-600" />
-                    <span className="text-lg font-bold">AI Native App</span>
+                    <span className="hidden md:block text-lg font-bold">AI Native App</span>
                 </Link>
 
                 {/* Desktop Navigation */}
