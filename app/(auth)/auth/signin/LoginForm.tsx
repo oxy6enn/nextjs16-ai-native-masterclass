@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Sparkles, Eye, EyeOff } from "lucide-react"
+import { signIn } from "@/lib/auth-client"
 
 export default function LoginForm() {
 
@@ -24,23 +25,28 @@ export default function LoginForm() {
         setError("")
 
         try {
-
-            // Mock API Call (จะเปลี่ยนเป็นเรียก API จริงใน Section 7)
-            await new Promise((resolve) => setTimeout(resolve, 1500))
-            const result = {
-                error: email === "test@example.com" && password === "password" ? null : { message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" },
-            }
+            const result = await signIn.email({
+                email,
+                password,
+            });
 
             if (result.error) {
-                setError(result.error.message || "เข้าสู่ระบบไม่สำเร็จ")
+                if (result.error.message === "Invalid email or password") {
+                    setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง")
+                } else {
+                    setError(result.error.message || "เข้าสู่ระบบไม่สำเร็จ")
+                }
             } else {
-                router.push("/dashboard") // นำทางไปยังหน้า Dashboard หลังจากเข้าสู่ระบบสำเร็จ
+                router.push("/dashboard");
             }
+
         } catch {
             setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
         } finally {
             setIsLoading(false)
         }
+
+
     }
 
     return (
@@ -125,15 +131,7 @@ export default function LoginForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <Link
-                            href="/auth/forgot-password"
-                            className="text-xs text-purple-500 hover:text-purple-400"
-                        >
-                            ลืมรหัสผ่าน?
-                        </Link>
-                    </div>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
                         <Input
                             id="password"
@@ -151,6 +149,16 @@ export default function LoginForm() {
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                     </div>
+
+                    <div className="flex items-center justify-between">
+                        <Link
+                            href="/auth/forgot-password"
+                            className="text-xs text-purple-500 hover:text-purple-400"
+                        >
+                            ลืมรหัสผ่าน?
+                        </Link>
+                    </div>
+    
                 </div>
 
                 <Button
